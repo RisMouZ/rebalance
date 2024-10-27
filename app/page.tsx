@@ -12,6 +12,8 @@ import { API_URL } from "./config";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import WalletView from "./components/WalletView";
+import StratView from "./components/StratView";
 
 export default function Home() {
   const { account } = useGetAccountInfo();
@@ -20,11 +22,12 @@ export default function Home() {
   const isLoggedIn = useGetIsLoggedIn();
   const [tokens, setTokens] = useState<any>();
   const [address, setAddress] = useState<any>();
+
   const getTokens = async () => {
     axios
       .get(
-        `https://api.elrond.com/accounts/erd1lzrec03dgwqm2qt4kqa4w2fpcaqz9pm8phu8law9xx9r7hkksscqez9tdr/tokens?size=10000
-`
+        `https://api.elrond.com/accounts/${account.address}/tokens?size=10000
+`,
       )
       .then((res) => {
         setTokens(res.data);
@@ -43,26 +46,11 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="justify-center flex items-center pt-20 flex-col">
+      <div className="m-3 mt-20 flex w-auto items-center justify-center">
         {isLoggedIn ? (
           <>
-            Your balance :{" "}
-            {/* <FormatAmount
-              value={account.balance}
-              egldLabel={network.egldLabel}
-            />
-            <br />
-            <br />
-            Your tokens :
-            {tokens?.map((token: any) => (
-              <div key={token.identifier}>
-                {token.rawResponse.ticker} :{" "}
-                {(
-                  Number(token.rawResponse.balance) /
-                  Math.pow(10, token.rawResponse.decimals)
-                ).toFixed(2)}{" "}
-              </div>
-            ))} */}
+            <WalletView tokens={tokens} />
+            <StratView tokens={tokens} />
           </>
         ) : (
           <>Take a Log Bro !</>
