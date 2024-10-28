@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { TokensProps } from "../utils/interface";
+import { Allocation, TokensProps } from "../utils/interface";
 
 const StratView = ({ tokens }: TokensProps) => {
   // 1. Initialise un état pour les allocationes
-  interface Allocation {
-    ticker: string;
-    percentage: number;
-  }
 
   const [allocations, setAllocations] = useState<Allocation[]>([]);
 
   // 2. Fonction pour ajouter une nouvelle allocatione vide
   const addAllocation = () => {
-    setAllocations([...allocations, { ticker: "", percentage: 0 }]);
+    setAllocations([
+      ...allocations,
+      { ticker: "", identifier: "", percentage: 0 },
+    ]);
   };
 
   // 3. Fonction pour mettre à jour une allocatione

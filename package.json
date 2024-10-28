@@ -10,17 +10,24 @@
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.2",
+    "@hookform/resolvers": "^3.9.0",
     "@multiversx/sdk-core": "13.11.0",
     "@multiversx/sdk-dapp": "^2.40.11",
     "@multiversx/sdk-network-providers": "^2.9.0",
+    "@tanstack/react-virtual": "^3.10.8",
     "@types/resize-observer-browser": "^0.1.11",
     "aria-hidden": "^1.2.4",
+    "cmdk": "^1.0.0",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^11.11.10",
     "next": "^15.0.0",
     "react": "19.0.0-rc-65a56d0e-20241020",
     "react-dom": "19.0.0-rc-65a56d0e-20241020",
+    "react-hook-form": "^7.53.1",
     "react-remove-scroll": "^2.6.0",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",

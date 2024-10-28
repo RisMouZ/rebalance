@@ -9,3 +9,10 @@ export interface Token {
 export interface TokensProps {
   tokens: Token[];
 }
+
+export interface Allocation {
+  ticker: string;
+  identifier: string;
+  percentage: number;
+  decimals?: number;
+}
