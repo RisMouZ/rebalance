@@ -41,8 +41,6 @@ export default function Home() {
     getTokens();
   }, [isLoggedIn]);
 
-  console.log(tokens);
-
   return (
     <>
       <Navbar />

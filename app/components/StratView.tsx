@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { set } from "date-fns";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
@@ -20,7 +19,7 @@ const StratView = ({ tokens }: TokensProps) => {
   const [allocations, setAllocations] = useState<Allocation[]>([]);
   const [allocationsSaved, setAllocationsSaved] = useState<Allocation[][]>([]);
   const [indexOnChange, setIndexOnChange] = useState<number>(-1);
-  const [tokenList, setTokenList] = useState<string[]>([]);
+  const [identifiersList, setIdentifiersList] = useState<string[]>([]);
 
   useEffect(() => {
     const savedValue = localStorage.getItem(account.address);
@@ -30,14 +29,13 @@ const StratView = ({ tokens }: TokensProps) => {
   }, [localStorage.getItem(account.address)]);
 
   useEffect(() => {
-    getTokensList();
+    getIdentifiersList();
   }, []);
 
-  const getTokensList = () => {
-    axios.get("http://localhost:3004/tokens").then((res) => {
-      setTokenList(res.data);
+  const getIdentifiersList = () => {
+    axios.get("http://localhost:3004/identifier").then((res) => {
+      console.log("identifiers :", res.data);
     });
-    console.log("tokens list :", tokenList);
   };
 
   const saveToLocalStorage = () => {

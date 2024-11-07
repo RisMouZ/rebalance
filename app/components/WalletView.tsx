@@ -41,9 +41,9 @@ const WalletView = ({ tokens }: TokensProps) => {
   //         setTokens(res.data);
   //       });
   //   };
-  console.log("network", network);
-  console.log("account", account);
-  console.log("price", price);
+  // console.log("network", network);
+  // console.log("account", account);
+  // console.log("price", price);
 
   useEffect(() => {
     // getTokens();
