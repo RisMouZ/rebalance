@@ -32,11 +32,17 @@ const StratView = ({ tokens }: TokensProps) => {
     getIdentifiersList();
   }, []);
 
-  const getIdentifiersList = () => {
-    axios.get("http://localhost:3004/identifier").then((res) => {
-      console.log("identifiers :", res.data);
+  const getIdentifiersList = async () => {
+    await axios.get("/api/all-tokens").then((res) => {
+      let identifiersList: string[] = [];
+      res.data.data.forEach((token: any) => {
+        identifiersList.push(token.identifier);
+      });
+      setIdentifiersList(identifiersList);
     });
   };
+
+  console.log("identifiersList", identifiersList);
 
   const saveToLocalStorage = () => {
     let newAllocationsSaved = [...allocationsSaved, allocations];

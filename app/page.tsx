@@ -23,15 +23,22 @@ export default function Home() {
   const [tokens, setTokens] = useState<any>();
   const [address, setAddress] = useState<any>();
 
+  type ApiResponse = {
+    data: any; // Adaptez ce type si vous connaissez la structure de la réponse
+  };
+
+  // const username = "ecompass";
+  // const password = "eyK6EwuT0AyIfaIpcv3uFwRyyXATbf";
+  // const url = "https://multiversx-api.beaconx.app/api/accounts/";
+
+  // const basicAuth =
+  //   "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
+
   const getTokens = async () => {
-    axios
-      .get(
-        `https://api.elrond.com/accounts/${account.address}/tokens?size=10000
-`,
-      )
-      .then((res) => {
-        setTokens(res.data);
-      });
+    await axios
+      .get<ApiResponse>(`/api/tokens-user?address=${account.address}`)
+      .then((response) => setTokens(response.data.data))
+      .catch((error) => console.error("Erreur:", error));
   };
 
   useEffect(() => {

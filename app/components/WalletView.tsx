@@ -25,7 +25,6 @@ const WalletView = ({ tokens }: TokensProps) => {
   const { account } = useGetAccountInfo();
   const { network } = useGetNetworkConfig();
   const { price } = useGetEgldPrice();
-  const networkProvider = new ApiNetworkProvider(API_URL, { timeout: 10000 });
   const isLoggedIn = useGetIsLoggedIn();
   // const [tokens, setTokens] = useState<any>();
   const [address, setAddress] = useState<any>();
@@ -114,7 +113,7 @@ const WalletView = ({ tokens }: TokensProps) => {
                 : token.price &&
                   token.price *
                     (Number(token.balance) / Math.pow(10, token.decimals)) >
-                    1 && (
+                    2 && (
                     <TableRow key={token.identifier}>
                       <TableCell className="font-medium">
                         {token.ticker}
