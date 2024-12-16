@@ -11,7 +11,6 @@ export interface TokensProps {
 }
 
 export interface Allocation {
-  ticker: string;
   identifier: string;
   percentage: number;
   decimals?: number;

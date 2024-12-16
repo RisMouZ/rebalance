@@ -18,7 +18,7 @@ import StratView from "./components/StratView";
 export default function Home() {
   const { account } = useGetAccountInfo();
   const { network } = useGetNetworkConfig();
-  const networkProvider = new ApiNetworkProvider(API_URL, { timeout: 10000 });
+  // const networkProvider = new ApiNetworkProvider(API_URL, { timeout: 10000 });
   const isLoggedIn = useGetIsLoggedIn();
   const [tokens, setTokens] = useState<any>();
   const [address, setAddress] = useState<any>();

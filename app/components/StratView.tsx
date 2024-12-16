@@ -29,18 +29,71 @@ const StratView = ({ tokens }: TokensProps) => {
   }, [localStorage.getItem(account.address)]);
 
   useEffect(() => {
-    getIdentifiersList();
+    getIdentifiersList()
+      .then((tokens) => {
+        let identifiersList: string[] = [];
+        tokens.forEach((token: any) => {
+          identifiersList.push(token.token.id);
+        });
+        setIdentifiersList(identifiersList);
+        console.log("identifiersList", identifiersList);
+      })
+      .catch((error) => {
+        console.error("Erreur générale:", error);
+      });
   }, []);
 
   const getIdentifiersList = async () => {
-    await axios.get("/api/all-tokens").then((res) => {
-      let identifiersList: string[] = [];
-      res.data.data.forEach((token: any) => {
-        identifiersList.push(token.identifier);
-      });
-      setIdentifiersList(identifiersList);
-    });
+    const baseUrl = "https://data-api.mvx.fr/tokens";
+    const pageSize = 100;
+    let from = 1;
+    let allTokens: any[] = [];
+    let hasMoreData = true;
+
+    try {
+      while (hasMoreData) {
+        const url = `${baseUrl}?from=${from}&size=${pageSize}`;
+
+        const response = await axios.get(url);
+
+        const tokens = response.data;
+
+        if (tokens && tokens.length > 0) {
+          allTokens = allTokens.concat(tokens);
+          from += pageSize;
+        } else {
+          hasMoreData = false;
+        }
+      }
+
+      console.log("Toutes les données ont été récupérées.");
+      console.log("allTokens", allTokens);
+
+      return allTokens;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Erreur lors de la récupération des données:",
+          error.message,
+        );
+      } else {
+        console.error("Erreur lors de la récupération des données:", error);
+      }
+      throw error; // Relancer l'erreur pour qu'elle puisse être gérée en amont
+    }
   };
+
+  // .then((res) => {
+  //   console.log("res :", res.data);
+
+  //   let identifiersList: string[] = [];
+  //   res.data.data.forEach((token: any) => {
+  //     identifiersList.push(token.identifier);
+  //   });
+  //   setIdentifiersList(identifiersList);
+  // });
+  //   }
+  // };
 
   console.log("identifiersList", identifiersList);
 
@@ -48,6 +101,7 @@ const StratView = ({ tokens }: TokensProps) => {
     let newAllocationsSaved = [...allocationsSaved, allocations];
     setAllocationsSaved(newAllocationsSaved);
     localStorage.setItem(account.address, JSON.stringify(newAllocationsSaved));
+    setAllocations([]);
     const savedValue = localStorage.getItem(account.address);
     if (savedValue) {
       setAllocationsSaved(JSON.parse(savedValue));
@@ -69,10 +123,7 @@ const StratView = ({ tokens }: TokensProps) => {
 
   // 2. Fonction pour ajouter une nouvelle allocatione vide
   const addAllocation = () => {
-    setAllocations([
-      ...allocations,
-      { ticker: "", identifier: "", percentage: 0 },
-    ]);
+    setAllocations([...allocations, { identifier: "", percentage: 0 }]);
   };
 
   // 3. Fonction pour mettre à jour une allocatione
@@ -101,6 +152,8 @@ const StratView = ({ tokens }: TokensProps) => {
     return totalPercentage <= 100;
   };
 
+  console.log("allocations", allocationsSaved);
+
   return (
     <div className="m-2 basis-1/2 rounded bg-slate-300 p-3">
       {allocationsSaved[0] && (
@@ -118,7 +171,7 @@ const StratView = ({ tokens }: TokensProps) => {
                 {allocation.map(
                   (
                     allocation: {
-                      ticker: string | number | readonly string[] | undefined;
+                      identifier: string | undefined;
                       percentage:
                         | string
                         | number
@@ -130,7 +183,7 @@ const StratView = ({ tokens }: TokensProps) => {
                     <TableBody>
                       <TableRow key={index}>
                         <TableCell className="font-medium">
-                          {allocation.ticker}
+                          {allocation.identifier}
                         </TableCell>
                         <TableCell className="text-right">
                           {allocation.percentage}%
@@ -159,20 +212,31 @@ const StratView = ({ tokens }: TokensProps) => {
           {allocations.map(
             (
               allocation: {
-                ticker: string | number | readonly string[] | undefined;
-                percentage: string | number | readonly string[] | undefined;
+                identifier: string | undefined;
+                percentage: number | undefined;
               },
               index: number,
             ) => (
               <div key={index}>
                 <input
                   type="text"
+                  list={`tokens-${index}`} // Unique ID for the datalist to avoid conflicts if there are multiple inputs
                   placeholder="Nom"
-                  value={allocation.ticker}
+                  value={allocation.identifier}
                   onChange={(e) =>
-                    updateAllocation(index, "ticker", e.target.value)
+                    updateAllocation(index, "identifier", e.target.value)
                   }
                 />
+                <datalist id={`tokens-${index}`}>
+                  {identifiersList
+                    .sort((a, b) => a.length - b.length)
+                    .map((identifier) => (
+                      <option
+                        key={identifier}
+                        value={identifier.split("-")[0]}
+                      />
+                    ))}
+                </datalist>
                 <input
                   type="number"
                   placeholder="Pourcentage"
@@ -185,35 +249,53 @@ const StratView = ({ tokens }: TokensProps) => {
                     )
                   }
                 />
-                <button onClick={() => removeAllocation(index)}>
+                <Button onClick={() => removeAllocation(index)}>
                   Supprimer
-                </button>
+                </Button>
               </div>
             ),
           )}
-          <button onClick={addAllocation}>Add</button>
+          <Button className="mt-1 bg-slate-300 p-1" onClick={addAllocation}>
+            Add
+          </Button>
           <br />
-          <button onClick={saveToLocalStorage}>Save Strat</button>
+          <Button
+            className="mt-1 bg-slate-300 p-1"
+            onClick={saveToLocalStorage}
+          >
+            Save Strat
+          </Button>
         </div>
       ) : (
         <div className="m-2 rounded-xl bg-slate-100 p-3">
           {allocations.map(
             (
               allocation: {
-                ticker: string | number | readonly string[] | undefined;
-                percentage: string | number | readonly string[] | undefined;
+                identifier: string | undefined;
+                percentage: number | undefined;
               },
               index: number,
             ) => (
               <div key={index}>
                 <input
                   type="text"
+                  list={`tokens-${index}`} // Unique ID for the datalist to avoid conflicts if there are multiple inputs
                   placeholder="Nom"
-                  value={allocation.ticker}
+                  value={allocation.identifier}
                   onChange={(e) =>
-                    updateAllocation(index, "ticker", e.target.value)
+                    updateAllocation(index, "identifier", e.target.value)
                   }
                 />
+                <datalist id={`tokens-${index}`}>
+                  {identifiersList
+                    .sort((a, b) => a.length - b.length)
+                    .map((identifier) => (
+                      <option
+                        key={identifier}
+                        value={identifier.split("-")[0]}
+                      />
+                    ))}
+                </datalist>
                 <input
                   type="number"
                   placeholder="Pourcentage"
@@ -226,15 +308,19 @@ const StratView = ({ tokens }: TokensProps) => {
                     )
                   }
                 />
-                <button onClick={() => removeAllocation(index)}>
+                <Button onClick={() => removeAllocation(index)}>
                   Supprimer
-                </button>
+                </Button>
               </div>
             ),
           )}
-          <button onClick={addAllocation}>Add</button>
+          <Button className="mt-1 bg-slate-300 p-1" onClick={addAllocation}>
+            Add
+          </Button>
           <br />
-          <button onClick={saveModifiedStrat}>Save Modif</button>
+          <Button className="mt-1 bg-slate-300 p-1" onClick={saveModifiedStrat}>
+            Save Modif
+          </Button>
         </div>
       )}
     </div>
